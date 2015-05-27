@@ -1,0 +1,30 @@
+{
+  "name": "karma-json-preprocessor",
+  "version": "0.1.0",
+  "description": "A Karma plugin. Convert JSON files into JS variables to use in your tests.",
+  "main": "src/karma-json-preprocessor.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mjeanroy/karma-json-preprocessor.git"
+  },
+  "keywords": [
+    "karma-plugin",
+    "karma-preprocessor",
+    "json"
+  ],
+  "author": "Mickael Jeanroy <mickael.jeanroy@gmail.com>",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "3.8.11",
+    "jasmine": "2.3.1",
+    "gulp-jasmine": "2.0.1"
+  },
+  "peerDependencies": {
+    "karma": ">=0.9"
+  },
+  "license": "MIT",
+  "contributors": []
+}
