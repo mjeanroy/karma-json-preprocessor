@@ -1,6 +1,6 @@
 {
   "name": "karma-json-preprocessor",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A Karma plugin. Convert JSON files into JS variables to use in your tests.",
   "main": "src/karma-json-preprocessor.js",
   "scripts": {
