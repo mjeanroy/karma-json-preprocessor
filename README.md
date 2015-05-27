@@ -37,7 +37,7 @@ For instance this `foo.json`
 ```json
 {
   "id": 1,
-  "name": foo
+  "name": 'foo'
 }
 ```
 This file will be served as `foo.json.js` and available in global `window.__json__`:
