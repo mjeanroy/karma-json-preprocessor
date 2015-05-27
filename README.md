@@ -32,7 +32,7 @@ module.exports = function(config) {
 
 This preprocessor converts JSON files into JS variables and publishes them in the global `window.__json__`, so that you can use these to externalize your json fixtures.
 
-Note that your files will be validated with JSON.parse and ignore if this produce an error.
+Note that your files will be validated with JSON.parse and ignored if parsing throw an error.
 
 For instance this `foo.json`
 
