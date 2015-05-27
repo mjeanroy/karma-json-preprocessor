@@ -50,6 +50,39 @@ console.log(window.__json__['foo.json'].id);
 console.log(window.__json__['foo.json'].name);
 ```
 
+## Configuration
+
+Default global variable name is by default `__json__`, but you can override it with your own name in karma configuration:
+
+```js
+// karma.conf.js
+module.exports = function(config) {
+  config.set({
+    preprocessors: {
+      '**/*.json': ['json']
+    },
+
+    files: [
+      '**/*.js',
+      '**/*.json'
+    ],
+    
+    jsonPreprocessor: {
+      varName: '$json'
+    }
+  });
+};
+```
+
+And now in your test:
+
+```js
+console.log(window.$json['foo.json']);
+console.log(window.$json['foo.json'].id);
+console.log(window.$json['foo.json'].name);
+```
+
+
 ----
 
 For more information on Karma see the [homepage].
