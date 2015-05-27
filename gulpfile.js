@@ -23,11 +23,32 @@
  */
 
 var gulp = require('gulp');
+var bump = require('gulp-bump');
+var tag_version = require('gulp-tag-version');
+var git = require('gulp-git');
 var jasmine = require('gulp-jasmine');
 
 gulp.task('test', function () {
     return gulp.src('test/*.js')
         .pipe(jasmine());
+});
+
+['minor', 'major', 'patch'].forEach(function(level) {
+  gulp.task('release:' + level, ['test'], function() {
+    gulp.src(['./package.json'])
+
+      // bump the version number in those files 
+      .pipe(bump({type: level}))
+
+      // save it back to filesystem 
+      .pipe(gulp.dest('./'))
+
+      // commit the changed version number 
+      .pipe(git.commit('release: bumps package version'))
+ 
+      // tag it in the repository
+      .pipe(tag_version());
+  });
 });
 
 gulp.task('default', ['test']);
