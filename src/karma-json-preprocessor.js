@@ -26,27 +26,23 @@ var util = require('util');
 
 var TEMPLATE = '' +
   'window.__json__ = window.__json__ || {};\n' +
-  'window.__json__[\'%s\'] = \'%s\'';
+  'window.__json__[\'%s\'] = %s;';
 
 var createJsonPreprocessor = function(logger, basePath) {
   var log = logger.create('preprocessor.json');
 
   return function(content, file, done) {
     log.debug('Processing "%s".', file.originalPath);
-
     var jsonPath = file.originalPath.replace(basePath + '/', '');
-
     file.path = file.path + '.js';
 
-    var json;
     try {
-      json = JSON.parse(content);
+      var o = JSON.parse(content);
+      done(util.format(TEMPLATE, jsonPath, JSON.stringify(o)));
     } catch (e) {
       log.error('Json representation of %s is not valid !', file.originalPath);
+      done();
     }
-
-    var content = util.format(TEMPLATE, jsonPath, json);
-    done(content);
   };
 };
 

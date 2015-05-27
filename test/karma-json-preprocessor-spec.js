@@ -76,27 +76,11 @@ describe('json-preprocessor', function() {
       });
     });
 
-    it('should parse json content', function(done) {
-      file = newFile('/base/path/file.json');
-      obj = {
-        id: 1
-      };
-
-      spyOn(JSON, 'parse').and.callThrough();
-
-      process(JSON.stringify(obj), file, function(processedContent) {
-        expect(JSON.parse).toHaveBeenCalledWith(JSON.stringify(obj));
-        done();
-      });
-    });
-
     it('should log processing', function(done) {
       file = newFile('/base/path/file.json');
       obj = {
         id: 1
       };
-
-      spyOn(JSON, 'parse').and.callThrough();
 
       process(JSON.stringify(obj), file, function(processedContent) {
         expect(logger.create).toHaveBeenCalled();
