@@ -37,7 +37,7 @@ var createJsonPreprocessor = function(logger, basePath) {
     file.path = file.path + '.js';
 
     try {
-      var o = JSON.parse(content);
+      var o = JSON.parse(content.trim());
       done(util.format(TEMPLATE, jsonPath, JSON.stringify(o)));
     } catch (e) {
       log.error('Json representation of %s is not valid !', file.originalPath);
