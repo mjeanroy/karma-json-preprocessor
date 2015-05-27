@@ -45,7 +45,9 @@ For instance this `foo.json`
 This file will be served as `foo.json.js` and available in global `window.__json__`:
 
 ```js
-console.log(window.__json__['foo.json'];
+console.log(window.__json__['foo.json']);
+console.log(window.__json__['foo.json'].id);
+console.log(window.__json__['foo.json'].name);
 ```
 
 ----
