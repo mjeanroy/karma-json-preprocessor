@@ -24,21 +24,27 @@
 
 var util = require('util');
 
-var TEMPLATE = '' +
-  'window.__json__ = window.__json__ || {};\n' +
-  'window.__json__[\'%s\'] = %s;';
+var createTemplate = function(varName) {
+  return '' +
+    'window.' + varName + ' = window.' + varName + ' || {};\n' +
+    'window.' + varName + '[\'%s\'] = %s;';
+};
 
-var createJsonPreprocessor = function(logger, basePath) {
+var createJsonPreprocessor = function(logger, basePath, config) {
   var log = logger.create('preprocessor.json');
 
   return function(content, file, done) {
     log.debug('Processing "%s".', file.originalPath);
+    var conf = config || {};
     var jsonPath = file.originalPath.replace(basePath + '/', '');
+    var template = createTemplate(conf.varName || '__json__');
+
+    // Update file path
     file.path = file.path + '.js';
 
     try {
       var o = JSON.parse(content.trim());
-      done(util.format(TEMPLATE, jsonPath, JSON.stringify(o)));
+      done(util.format(template, jsonPath, JSON.stringify(o)));
     } catch (e) {
       log.error('Json representation of %s is not valid !', file.originalPath);
       done();
@@ -46,7 +52,7 @@ var createJsonPreprocessor = function(logger, basePath) {
   };
 };
 
-createJsonPreprocessor.$inject = ['logger', 'config.basePath'];
+createJsonPreprocessor.$inject = ['logger', 'config.basePath', 'config.jsonPreprocessor'];
 
 module.exports = {
   'preprocessor:json': ['factory', createJsonPreprocessor]

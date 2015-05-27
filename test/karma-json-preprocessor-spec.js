@@ -46,7 +46,7 @@ describe('json-preprocessor', function() {
   it('should export module', function() {
     expect(mod).toBeDefined();
     expect(mod).toEqual(['factory', jasmine.any(Function)]);
-    expect(mod[1].$inject).toEqual(['logger', 'config.basePath']);
+    expect(mod[1].$inject).toEqual(['logger', 'config.basePath', 'config.jsonPreprocessor']);
   });
 
   describe('once initialized', function() {
@@ -98,6 +98,23 @@ describe('json-preprocessor', function() {
       process('foo', file, function(processedContent) {
         expect(logger.create).toHaveBeenCalled();
         expect(log.error).toHaveBeenCalledWith('Json representation of %s is not valid !', '/base/path/file.json');
+        done();
+      });
+    });
+
+    it('should override default variable name', function(done) {
+      process = mod[1](logger, basePath, {
+        varName: '$json'
+      });
+
+      file = newFile('/base/path/file.json');
+      obj = {
+        id: 1
+      };
+
+      process(JSON.stringify(obj), file, function(processedContent) {
+        expect(processedContent).toContain('window.$json');
+        expect(processedContent).not.toContain('window.__json__');
         done();
       });
     });
