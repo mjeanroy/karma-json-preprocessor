@@ -30,7 +30,7 @@ module.exports = function(config) {
 
 ## How does it work ?
 
-This preprocessor converts JSON files into JS variables (using `JSON.parse`) and publishes them in the global `window.__json__`, so that you can use these for testing DOM operations.
+This preprocessor converts JSON files into JS variables (using `JSON.parse`) and publishes them in the global `window.__json__`, so that you can use these to externalize your json fixtures.
 
 For instance this `foo.json`
 
