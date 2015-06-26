@@ -50,6 +50,18 @@ console.log(window.__json__['foo.json'].id);
 console.log(window.__json__['foo.json'].name);
 ```
 
+This preprocessor will publish javascript on a global variable: it means that if you update an object, theses updates will never be reverted. If your tests do not alter objects, you don't have to worry about this, otherwise, you should clone objects before using it.
+
+Since version 0.3.0, you can also use the `$get` function to use a clone of the original object:
+
+```js
+console.log(window.__json__.$get('foo.json'));
+
+// Following line will display 'true'
+// Objects are equals, but new instance is returned each time.
+console.log(window.__json__.$get('foo.json') !== window.__json__.$get('foo.json'));
+```
+
 ## Configuration
 
 Default global variable name is by default `__json__`, but you can override it with your own name in karma configuration:
@@ -81,7 +93,6 @@ console.log(window.$json['foo.json']);
 console.log(window.$json['foo.json'].id);
 console.log(window.$json['foo.json'].name);
 ```
-
 
 ----
 
