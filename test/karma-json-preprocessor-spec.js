@@ -102,10 +102,8 @@ describe('json-preprocessor', function() {
       });
     });
 
-    it('should override default variable name', function(done) {
-      process = mod[1](logger, basePath, {
-        varName: '$json'
-      });
+    fit('should create getter function', function(done) {
+      process = mod[1](logger, basePath);
 
       file = newFile('/base/path/file.json');
       obj = {
@@ -113,8 +111,15 @@ describe('json-preprocessor', function() {
       };
 
       process(JSON.stringify(obj), file, function(processedContent) {
-        expect(processedContent).toContain('window.$json');
-        expect(processedContent).not.toContain('window.__json__');
+        // Create local window variable and trigger eval
+        var window = {};
+        eval(processedContent);
+
+        window.__json__['foo'] = obj;
+        var clone = window.__json__.$get('foo');
+        expect(clone).not.toBe(obj);
+        expect(clone).toEqual(obj);
+
         done();
       });
     });

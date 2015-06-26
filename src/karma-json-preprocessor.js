@@ -26,8 +26,14 @@ var util = require('util');
 
 var createTemplate = function(varName) {
   return '' +
+    // Append to dictionary object
     'window.' + varName + ' = window.' + varName + ' || {};\n' +
-    'window.' + varName + '[\'%s\'] = %s;';
+    'window.' + varName + '[\'%s\'] = %s;\n' +
+
+    // Append getter function that will clone object
+    'window.' + varName + '.$get = window.' + varName + '.$get || function(path) {\n' +
+    '  return JSON.parse(JSON.stringify(window.' + varName + '[path]));\n' +
+    '};';
 };
 
 var createJsonPreprocessor = function(logger, basePath, config) {
