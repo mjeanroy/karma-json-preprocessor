@@ -4,7 +4,11 @@
   "description": "A Karma plugin. Convert JSON files into JS variables to use in your tests.",
   "main": "src/karma-json-preprocessor.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "release": "gulp release",
+    "release:patch": "gulp release:patch",
+    "release:minor": "gulp release:minor",
+    "release:major": "gulp release:major"
   },
   "repository": {
     "type": "git",
