@@ -32,7 +32,12 @@ var createTemplate = function(varName) {
 
     // Append getter function that will clone object
     'window.' + varName + '.$get = window.' + varName + '.$get || function(path) {\n' +
-    '  return JSON.parse(JSON.stringify(window.' + varName + '[path]));\n' +
+    '  try { \n' +
+    '    return JSON.parse(JSON.stringify(window.' + varName + '[path]));\n' +
+    '  } catch (e) {\n' +
+    '    console.warn("Unable to process json file: ", path);\n' +
+    '    return null;\n' +
+    '  }' +
     '};';
 };
 
@@ -53,7 +58,7 @@ var createJsonPreprocessor = function(logger, basePath, config) {
       done(util.format(template, jsonPath, JSON.stringify(o)));
     } catch (e) {
       log.error('Json representation of %s is not valid !', file.originalPath);
-      done();
+      done('');
     }
   };
 };

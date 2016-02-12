@@ -39,10 +39,6 @@ describe('json-preprocessor', function() {
     };
   });
 
-  it('shoud pass', function() {
-    expect(true).toBe(true);
-  });
-
   it('should export module', function() {
     expect(mod).toBeDefined();
     expect(mod).toEqual(['factory', jasmine.any(Function)]);
@@ -96,13 +92,14 @@ describe('json-preprocessor', function() {
       };
 
       process('foo', file, function(processedContent) {
+        expect(processedContent).toBe('');
         expect(logger.create).toHaveBeenCalled();
         expect(log.error).toHaveBeenCalledWith('Json representation of %s is not valid !', '/base/path/file.json');
         done();
       });
     });
 
-    fit('should create getter function', function(done) {
+    it('should create getter function', function(done) {
       process = mod[1](logger, basePath);
 
       file = newFile('/base/path/file.json');
@@ -120,6 +117,26 @@ describe('json-preprocessor', function() {
         expect(clone).not.toBe(obj);
         expect(clone).toEqual(obj);
 
+        done();
+      });
+    });
+
+    it('should not fail if json is not valid', function(done) {
+      process = mod[1](logger, basePath);
+
+      file = newFile('/base/path/file.json');
+      obj = {
+        id: 1
+      };
+
+      process('{"id": 1}', file, function(processedContent) {
+        // Create local window variable and trigger eval
+        var window = {};
+        eval(processedContent);
+
+        window.__json__['foo'] = null;
+        var clone = window.__json__.$get('foo');
+        expect(clone).toBe(null);
         done();
       });
     });
