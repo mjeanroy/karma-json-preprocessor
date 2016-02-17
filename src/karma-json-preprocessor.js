@@ -43,11 +43,17 @@ var createTemplate = function(varName) {
 
 var createJsonPreprocessor = function(logger, basePath, config) {
   var log = logger.create('preprocessor.json');
+  var conf = config || {};
+  var stripPrefix = new RegExp('^' + (conf.stripPrefix || ''));
 
   return function(content, file, done) {
     log.debug('Processing "%s".', file.originalPath);
-    var conf = config || {};
-    var jsonPath = file.originalPath.replace(basePath + '/', '');
+
+    // Build json path file.
+    var jsonPath = file.originalPath
+      .replace(basePath + '/', '')
+      .replace(stripPrefix, '');
+
     var template = createTemplate(conf.varName || '__json__');
 
     // Update file path

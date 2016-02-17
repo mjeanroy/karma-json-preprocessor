@@ -60,6 +60,32 @@ describe('json-preprocessor', function() {
       process = mod[1](logger, basePath);
     });
 
+    it('should process file and strip prefix', function(done) {
+      process = mod[1](logger, basePath, {
+        stripPrefix: 'path'
+      });
+
+      file = newFile('/base/path/file.json');
+      obj = {
+        id: 1
+      };
+
+      process(JSON.stringify(obj), file, function(processedContent) {
+        var window = {};
+
+        expect(window.__json__).not.toBeDefined();
+
+        eval(processedContent);
+
+        expect(window.__json__).toEqual({
+          '/file.json': jasmine.anything(),
+          $get: jasmine.any(Function)
+        });
+
+        done();
+      });
+    });
+
     it('should process file', function(done) {
       file = newFile('/base/path/file.json');
       obj = {
