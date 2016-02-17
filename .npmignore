@@ -1,0 +1,11 @@
+# NPM dependencies
+node_modules/
+
+# Build sources
+gulpfile.js
+
+# Test sources
+test/
+
+# Hidden files
+.*
