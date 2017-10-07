@@ -22,30 +22,42 @@
  * SOFTWARE.
  */
 
-var gulp = require('gulp');
-var bump = require('gulp-bump');
-var tag_version = require('gulp-tag-version');
-var git = require('gulp-git');
-var jasmine = require('gulp-jasmine');
+'use strict';
 
-gulp.task('test', function () {
-    return gulp.src('test/*.js')
-        .pipe(jasmine());
+const path = require('path');
+const gulp = require('gulp');
+const bump = require('gulp-bump');
+const tag_version = require('gulp-tag-version');
+const git = require('gulp-git');
+const jasmine = require('gulp-jasmine');
+
+const ROOT = __dirname;
+
+gulp.task('test', () => {
+  const src = [
+    path.join(ROOT, 'test', '**', '*.js')
+  ];
+
+  return gulp.src(src).pipe(jasmine());
 });
 
-['minor', 'major', 'patch'].forEach(function(level) {
-  gulp.task('release:' + level, ['test'], function() {
-    gulp.src(['./package.json'])
+['minor', 'major', 'patch'].forEach((type) => {
+  gulp.task(`release:${type}`, ['test'], () => {
+    const src = [
+      path.join(ROOT, 'package.json')
+    ];
 
-      // bump the version number in those files 
-      .pipe(bump({type: level}))
+    gulp.src(PKG_JSON)
 
-      // save it back to filesystem 
-      .pipe(gulp.dest('./'))
+      // bump the version number in those files
+      .pipe(bump({type}))
 
-      // commit the changed version number 
+      // save it back to filesystem
+      .pipe(gulp.dest(ROOT))
+
+      // commit the changed version number
       .pipe(git.commit('release: bumps package version'))
- 
+
       // tag it in the repository
       .pipe(tag_version());
   });
