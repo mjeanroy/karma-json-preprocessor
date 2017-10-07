@@ -1,5 +1,7 @@
 # karma-json-preprocessor
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/mjeanroy/karma-json-preprocessor.svg)](https://greenkeeper.io/)
+
 Preprocessor for converting JSON files into JS variables.
 
 ## Installation
