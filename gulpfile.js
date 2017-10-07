@@ -33,6 +33,7 @@ const babel = require('gulp-babel');
 const bump = require('gulp-bump');
 const tagVersion = require('gulp-tag-version');
 const git = require('gulp-git');
+const gulpFilter = require('gulp-filter');
 const jasmine = require('gulp-jasmine');
 const KarmaServer = require('karma').Server;
 
@@ -40,6 +41,7 @@ const ROOT = __dirname;
 const SRC = path.join(ROOT, 'src');
 const TEST = path.join(ROOT, 'test');
 const DIST = path.join(ROOT, 'dist');
+const PKG = path.join(ROOT, 'package.json');
 
 gulp.task('clean', () => {
   return del(DIST);
@@ -76,24 +78,33 @@ gulp.task('test:it', ['test:unit'], (done) => {
 gulp.task('test', ['test:unit', 'test:it']);
 
 ['minor', 'major', 'patch'].forEach((type) => {
-  gulp.task(`release:${type}`, ['test'], () => {
-    gulp.src(path.join(ROOT, 'package.json'))
+  gulp.task(`release:${type}`, ['build', 'test'], () => {
+    const jsonFilter = gulpFilter('*.json', {restore: true});
+    const pkgJsonFilter = gulpFilter('package.json', {restore: true});
+    const distFilter = gulpFilter('dist', {restore: true});
 
-      // bump the version number in those files
+    return gulp.src([PKG, DIST])
+      // Update version in `package.json` file.
+      .pipe(jsonFilter)
       .pipe(bump({type}))
-
-      // save it back to filesystem
       .pipe(gulp.dest(ROOT))
+      .pipe(jsonFilter.restore)
 
-      // commit the changed version number
-      .pipe(git.commit('release: bumps package version'))
+      // Commit release.
+      .pipe(git.add({args: '-f'}))
+      .pipe(git.commit('release: release version'))
 
-      // tag it in the repository
-      .pipe(tagVersion());
+      // Create tag.
+      .pipe(pkgJsonFilter)
+      .pipe(tagVersion())
+      .pipe(pkgJsonFilter.restore)
+
+      // Remove `dist` and commit for the next release.
+      .pipe(distFilter)
+      .pipe(git.rm({args: '-rf'}))
+      .pipe(git.commit('release: prepare next release'));
   });
 });
-
-gulp.task('default', ['test']);
 
 /**
  * Run Karma with configuration file.
