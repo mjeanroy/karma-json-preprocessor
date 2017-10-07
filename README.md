@@ -1,6 +1,6 @@
 # karma-json-preprocessor
 
-> Preprocessor for converting JSON files into JS variables.
+Preprocessor for converting JSON files into JS variables.
 
 ## Installation
 
