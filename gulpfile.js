@@ -26,28 +26,44 @@
 
 const path = require('path');
 const gulp = require('gulp');
+const eslint = require('gulp-eslint');
+const babel = require('gulp-babel');
 const bump = require('gulp-bump');
-const tag_version = require('gulp-tag-version');
+const tagVersion = require('gulp-tag-version');
 const git = require('gulp-git');
 const jasmine = require('gulp-jasmine');
 
 const ROOT = __dirname;
+const SRC = path.join(ROOT, 'src');
+const TEST = path.join(ROOT, 'test');
+const DIST = path.join(ROOT, 'dist');
 
-gulp.task('test', () => {
+gulp.task('lint', () => {
   const src = [
-    path.join(ROOT, 'test', '**', '*.js')
-  ];
+      path.join(SRC, '**', '*.js'),
+      path.join(TEST, '**', '*.js'),
+      path.join(ROOT, '*.js'),
+    ];
 
-  return gulp.src(src).pipe(jasmine());
+    return gulp.src(src)
+      .pipe(eslint())
+      .pipe(eslint.format())
+      .pipe(eslint.failAfterError());
+});
+
+gulp.task('build', ['lint'], () => {
+  return gulp.src(path.join(SRC, '**', '*.js'))
+    .pipe(babel())
+    .pipe(gulp.dest(DIST));
+});
+
+gulp.task('test', ['build'], () => {
+  return gulp.src(path.join(TEST, '**', '*.js')).pipe(jasmine());
 });
 
 ['minor', 'major', 'patch'].forEach((type) => {
   gulp.task(`release:${type}`, ['test'], () => {
-    const src = [
-      path.join(ROOT, 'package.json')
-    ];
-
-    gulp.src(PKG_JSON)
+    gulp.src(path.join(ROOT, 'package.json'))
 
       // bump the version number in those files
       .pipe(bump({type}))
@@ -59,7 +75,7 @@ gulp.task('test', () => {
       .pipe(git.commit('release: bumps package version'))
 
       // tag it in the repository
-      .pipe(tag_version());
+      .pipe(tagVersion());
   });
 });
 

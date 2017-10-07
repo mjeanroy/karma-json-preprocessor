@@ -1,11 +1,12 @@
 # NPM dependencies
 node_modules/
 
-# Build sources
-gulpfile.js
-
-# Test sources
-test/
+# Dev Files
+/gulpfile.js
+/src
+/test
 
 # Hidden files
-.*
+.eslintrc
+.nvmrc
+.travis.yml

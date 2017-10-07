@@ -22,45 +22,61 @@
  * SOFTWARE.
  */
 
-var util = require('util');
+'use strict';
 
-var createTemplate = function(varName) {
+const util = require('util');
+
+/**
+ * Create the code template that will be injected by this karma preprocessor.
+ *
+ * @param {string} varName The variable name containing JSON files.
+ * @return {string} The code template.
+ */
+function createTemplate(varName) {
   return '' +
     // Append to dictionary object
-    'window.' + varName + ' = window.' + varName + ' || {};\n' +
-    'window.' + varName + '[\'%s\'] = %s;\n' +
+    `window.${varName} = window.${varName} || {};\n` +
+    `window.${varName}[\'%s\'] = %s;\n` +
 
     // Append getter function that will clone object
-    'window.' + varName + '.$get = window.' + varName + '.$get || function(path) {\n' +
-    '  try { \n' +
-    '    return JSON.parse(JSON.stringify(window.' + varName + '[path]));\n' +
-    '  } catch (e) {\n' +
-    '    console.warn("Unable to process json file: ", path);\n' +
-    '    return null;\n' +
-    '  }' +
-    '};';
+    `window.${varName}.$get = window.${varName}.$get || function(path) {\n` +
+    `  try { \n` +
+    `    return JSON.parse(JSON.stringify(window.${varName}[path]));\n` +
+    `  } catch (e) {\n` +
+    `    console.warn("Unable to process json file: ", path);\n` +
+    `    return null;\n` +
+    `  }` +
+    `};`;
 };
 
-var createJsonPreprocessor = function(logger, basePath, config) {
-  var log = logger.create('preprocessor.json');
-  var conf = config || {};
-  var stripPrefix = new RegExp('^' + (conf.stripPrefix || ''));
+/**
+ * Create the JSON preprocessor.
+ *
+ * @param {Object} logger Karma logger.
+ * @param {string} basePath The base path initialized by karma.
+ * @param {Object} config The configuration object.
+ * @return {function} The preprocessor function.
+ */
+function createJsonPreprocessor(logger, basePath, config) {
+  const log = logger.create('preprocessor.json');
+  const conf = config || {};
+  const stripPrefix = new RegExp(`^${(conf.stripPrefix || '')}`);
 
   return function(content, file, done) {
     log.debug('Processing "%s".', file.originalPath);
 
     // Build json path file.
-    var jsonPath = file.originalPath
-      .replace(basePath + '/', '')
+    const jsonPath = file.originalPath
+      .replace(`${basePath}/`, '')
       .replace(stripPrefix, '');
 
-    var template = createTemplate(conf.varName || '__json__');
+    const template = createTemplate(conf.varName || '__json__');
 
     // Update file path
-    file.path = file.path + '.js';
+    file.path = `${file.path}.js`;
 
     try {
-      var o = JSON.parse(content.trim());
+      const o = JSON.parse(content.trim());
       done(util.format(template, jsonPath, JSON.stringify(o)));
     } catch (e) {
       log.error('Json representation of %s is not valid !', file.originalPath);
@@ -69,8 +85,12 @@ var createJsonPreprocessor = function(logger, basePath, config) {
   };
 };
 
-createJsonPreprocessor.$inject = ['logger', 'config.basePath', 'config.jsonPreprocessor'];
+createJsonPreprocessor.$inject = [
+  'logger',
+  'config.basePath',
+  'config.jsonPreprocessor',
+];
 
 module.exports = {
-  'preprocessor:json': ['factory', createJsonPreprocessor]
+  'preprocessor:json': ['factory', createJsonPreprocessor],
 };

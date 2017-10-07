@@ -22,38 +22,53 @@
  * SOFTWARE.
  */
 
-describe('json-preprocessor', function() {
+'use strict';
 
-  var jsonPreprocessor = require('../src/karma-json-preprocessor');
-  var mod, newFile;
+const jsonPreprocessor = require('../dist/karma-json-preprocessor');
 
-  beforeEach(function() {
+describe('json-preprocessor', () => {
+  let mod;
+  let newFile;
+
+  beforeEach(() => {
     mod = jsonPreprocessor['preprocessor:json'];
-    newFile = function(path) {
-      return {
-        path: path,
-        originalPath: path,
-        contentPath: path,
-        isUrl: false
-      };
-    };
+
+    newFile = (path) => ({
+      path: path,
+      originalPath: path,
+      contentPath: path,
+      isUrl: false,
+    });
   });
 
-  it('should export module', function() {
+  it('should export module', () => {
     expect(mod).toBeDefined();
     expect(mod).toEqual(['factory', jasmine.any(Function)]);
-    expect(mod[1].$inject).toEqual(['logger', 'config.basePath', 'config.jsonPreprocessor']);
+    expect(mod[1].$inject).toEqual([
+      'logger',
+      'config.basePath',
+      'config.jsonPreprocessor',
+    ]);
   });
 
-  describe('once initialized', function() {
-    var file, obj;
-    var log, logger;
-    var basePath, process;
+  describe('once initialized', () => {
+    let file;
+    let obj;
+    let log;
+    let logger;
+    let basePath;
+    let process;
 
-    beforeEach(function() {
-      log = jasmine.createSpyObj('log', ['debug', 'error']);
+    beforeEach(() => {
+      log = jasmine.createSpyObj('log', [
+        'debug',
+        'error',
+      ]);
 
-      logger = jasmine.createSpyObj('logger', ['create']);
+      logger = jasmine.createSpyObj('logger', [
+        'create',
+      ]);
+
       logger.create.and.returnValue(log);
 
       basePath = '/base';
@@ -62,16 +77,14 @@ describe('json-preprocessor', function() {
 
     it('should process file and strip prefix', function(done) {
       process = mod[1](logger, basePath, {
-        stripPrefix: 'path'
+        stripPrefix: 'path',
       });
 
       file = newFile('/base/path/file.json');
-      obj = {
-        id: 1
-      };
+      obj = {id: 1};
 
-      process(JSON.stringify(obj), file, function(processedContent) {
-        var window = {};
+      process(JSON.stringify(obj), file, (processedContent) => {
+        const window = {};
 
         expect(window.__json__).not.toBeDefined();
 
@@ -79,7 +92,7 @@ describe('json-preprocessor', function() {
 
         expect(window.__json__).toEqual({
           '/file.json': jasmine.anything(),
-          $get: jasmine.any(Function)
+          '$get': jasmine.any(Function),
         });
 
         done();
@@ -88,23 +101,19 @@ describe('json-preprocessor', function() {
 
     it('should process file', function(done) {
       file = newFile('/base/path/file.json');
-      obj = {
-        id: 1
-      };
+      obj = {id: 1};
 
-      process(JSON.stringify(obj), file, function(processedContent) {
+      process(JSON.stringify(obj), file, (processedContent) => {
         expect(file.path).toBe('/base/path/file.json.js');
         done();
       });
     });
 
-    it('should log processing', function(done) {
+    it('should log processing', (done) => {
       file = newFile('/base/path/file.json');
-      obj = {
-        id: 1
-      };
+      obj = {id: 1};
 
-      process(JSON.stringify(obj), file, function(processedContent) {
+      process(JSON.stringify(obj), file, (processedContent) => {
         expect(logger.create).toHaveBeenCalled();
         expect(log.debug).toHaveBeenCalledWith('Processing "%s".', '/base/path/file.json');
         done();
@@ -113,11 +122,9 @@ describe('json-preprocessor', function() {
 
     it('should log error if json is not valid', function(done) {
       file = newFile('/base/path/file.json');
-      obj = {
-        id: 1
-      };
+      obj = {id: 1};
 
-      process('foo', file, function(processedContent) {
+      process('foo', file, (processedContent) => {
         expect(processedContent).toBe('');
         expect(logger.create).toHaveBeenCalled();
         expect(log.error).toHaveBeenCalledWith('Json representation of %s is not valid !', '/base/path/file.json');
@@ -125,21 +132,21 @@ describe('json-preprocessor', function() {
       });
     });
 
-    it('should create getter function', function(done) {
+    it('should create getter function', (done) => {
       process = mod[1](logger, basePath);
 
       file = newFile('/base/path/file.json');
-      obj = {
-        id: 1
-      };
+      obj = {id: 1};
 
-      process(JSON.stringify(obj), file, function(processedContent) {
+      process(JSON.stringify(obj), file, (processedContent) => {
         // Create local window variable and trigger eval
-        var window = {};
+        const window = {};
+
         eval(processedContent);
 
         window.__json__['foo'] = obj;
-        var clone = window.__json__.$get('foo');
+
+        const clone = window.__json__.$get('foo');
         expect(clone).not.toBe(obj);
         expect(clone).toEqual(obj);
 
@@ -147,21 +154,21 @@ describe('json-preprocessor', function() {
       });
     });
 
-    it('should not fail if json is not valid', function(done) {
+    it('should not fail if json is not valid', (done) => {
       process = mod[1](logger, basePath);
 
       file = newFile('/base/path/file.json');
-      obj = {
-        id: 1
-      };
+      obj = {id: 1};
 
-      process('{"id": 1}', file, function(processedContent) {
+      process('{"id": 1}', file, (processedContent) => {
         // Create local window variable and trigger eval
-        var window = {};
+        const window = {};
+
         eval(processedContent);
 
         window.__json__['foo'] = null;
-        var clone = window.__json__.$get('foo');
+
+        const clone = window.__json__.$get('foo');
         expect(clone).toBe(null);
         done();
       });
