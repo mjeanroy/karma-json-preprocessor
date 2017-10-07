@@ -25,41 +25,55 @@
 'use strict';
 
 const path = require('path');
+const del = require('del');
 const gulp = require('gulp');
+const gutil = require('gulp-util');
 const eslint = require('gulp-eslint');
 const babel = require('gulp-babel');
 const bump = require('gulp-bump');
 const tagVersion = require('gulp-tag-version');
 const git = require('gulp-git');
 const jasmine = require('gulp-jasmine');
+const KarmaServer = require('karma').Server;
 
 const ROOT = __dirname;
 const SRC = path.join(ROOT, 'src');
 const TEST = path.join(ROOT, 'test');
 const DIST = path.join(ROOT, 'dist');
 
-gulp.task('lint', () => {
-  const src = [
-      path.join(SRC, '**', '*.js'),
-      path.join(TEST, '**', '*.js'),
-      path.join(ROOT, '*.js'),
-    ];
-
-    return gulp.src(src)
-      .pipe(eslint())
-      .pipe(eslint.format())
-      .pipe(eslint.failAfterError());
+gulp.task('clean', () => {
+  return del(DIST);
 });
 
-gulp.task('build', ['lint'], () => {
+gulp.task('lint', () => {
+  const src = [
+    path.join(SRC, '**', '*.js'),
+    path.join(TEST, '**', '*.js'),
+    path.join(ROOT, '*.js'),
+  ];
+
+  return gulp.src(src)
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
+
+gulp.task('build', ['clean', 'lint'], () => {
   return gulp.src(path.join(SRC, '**', '*.js'))
     .pipe(babel())
     .pipe(gulp.dest(DIST));
 });
 
-gulp.task('test', ['build'], () => {
-  return gulp.src(path.join(TEST, '**', '*.js')).pipe(jasmine());
+gulp.task('test:unit', ['build'], () => {
+  return gulp.src(path.join(TEST, 'units', '**', '*.js')).pipe(jasmine());
 });
+
+gulp.task('test:it', ['test:unit'], (done) => {
+  const configFile = path.join(TEST, 'it', 'karma.conf.js');
+  startKarma(configFile, () => done());
+});
+
+gulp.task('test', ['test:unit', 'test:it']);
 
 ['minor', 'major', 'patch'].forEach((type) => {
   gulp.task(`release:${type}`, ['test'], () => {
@@ -80,3 +94,19 @@ gulp.task('test', ['build'], () => {
 });
 
 gulp.task('default', ['test']);
+
+/**
+ * Run Karma with configuration file.
+ *
+ * @param {string} configFile Karma configuration file.
+ * @param {function} done Gulp done function.
+ */
+function startKarma(configFile, done) {
+  const karma = new KarmaServer({configFile}, () => {
+    gutil.log(gutil.colors.grey('Calling done callback of Karma'));
+    done();
+  });
+
+  gutil.log(gutil.colors.grey(`Running karma with configuration: ${configFile}`));
+  karma.start();
+}

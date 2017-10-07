@@ -24,7 +24,7 @@
 
 'use strict';
 
-const jsonPreprocessor = require('../dist/karma-json-preprocessor');
+const jsonPreprocessor = require('../../dist/karma-json-preprocessor');
 
 describe('json-preprocessor', () => {
   let mod;

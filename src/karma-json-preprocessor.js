@@ -33,21 +33,20 @@ const util = require('util');
  * @return {string} The code template.
  */
 function createTemplate(varName) {
+  // 1- Append to dictionary object
+  // 2- Append getter function that will clone object
   return '' +
-    // Append to dictionary object
-    `window.${varName} = window.${varName} || {};\n` +
-    `window.${varName}[\'%s\'] = %s;\n` +
-
-    // Append getter function that will clone object
-    `window.${varName}.$get = window.${varName}.$get || function(path) {\n` +
-    `  try { \n` +
-    `    return JSON.parse(JSON.stringify(window.${varName}[path]));\n` +
-    `  } catch (e) {\n` +
-    `    console.warn("Unable to process json file: ", path);\n` +
-    `    return null;\n` +
+    `window.${varName} = window.${varName} || {};` +
+    `window.${varName}[\'%s\'] = %s;` +
+    `window.${varName}.$get = window.${varName}.$get || function(path) {` +
+    `  try {` +
+    `    return JSON.parse(JSON.stringify(window.${varName}[path]));` +
+    `  } catch (e) {` +
+    `    console.warn("Unable to process json file: ", path);` +
+    `    return null;` +
     `  }` +
-    `};`;
-};
+    `}`;
+}
 
 /**
  * Create the JSON preprocessor.
@@ -83,7 +82,7 @@ function createJsonPreprocessor(logger, basePath, config) {
       done('');
     }
   };
-};
+}
 
 createJsonPreprocessor.$inject = [
   'logger',

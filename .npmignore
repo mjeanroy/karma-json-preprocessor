@@ -7,6 +7,7 @@ node_modules/
 /test
 
 # Hidden files
+.babelrc
 .eslintrc
 .nvmrc
 .travis.yml
