@@ -26,8 +26,9 @@
 
 const path = require('path');
 const del = require('del');
+const log = require('fancy-log');
+const colors = require('ansi-colors');
 const gulp = require('gulp');
-const gutil = require('gulp-util');
 const eslint = require('gulp-eslint');
 const babel = require('gulp-babel');
 const bump = require('gulp-bump');
@@ -114,10 +115,10 @@ gulp.task('test', ['test:unit', 'test:it']);
  */
 function startKarma(configFile, done) {
   const karma = new KarmaServer({configFile}, () => {
-    gutil.log(gutil.colors.grey('Calling done callback of Karma'));
+    log(colors.grey('Calling done callback of Karma'));
     done();
   });
 
-  gutil.log(gutil.colors.grey(`Running karma with configuration: ${configFile}`));
+  log(colors.grey(`Running karma with configuration: ${configFile}`));
   karma.start();
 }
