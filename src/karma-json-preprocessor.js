@@ -66,8 +66,8 @@ function createJsonPreprocessor(logger, basePath, config) {
 
     // Build json path file.
     const jsonPath = file.originalPath
-      .replace(`${basePath}/`, '')
-      .replace(stripPrefix, '');
+        .replace(`${basePath}/`, '')
+        .replace(stripPrefix, '');
 
     const template = createTemplate(conf.varName || '__json__');
 
