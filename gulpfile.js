@@ -56,15 +56,15 @@ gulp.task('lint', () => {
   ];
 
   return gulp.src(src)
-    .pipe(eslint())
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
+      .pipe(eslint())
+      .pipe(eslint.format())
+      .pipe(eslint.failAfterError());
 });
 
 gulp.task('build', ['clean', 'lint'], () => {
   return gulp.src(path.join(SRC, '**', '*.js'))
-    .pipe(babel())
-    .pipe(gulp.dest(DIST));
+      .pipe(babel())
+      .pipe(gulp.dest(DIST));
 });
 
 gulp.task('test:unit', ['build'], () => {
@@ -85,25 +85,25 @@ gulp.task('test', ['test:unit', 'test:it']);
     const distFilter = gulpFilter('dist', {restore: true});
 
     return gulp.src([PKG, DIST])
-      // Update version in `package.json` file.
-      .pipe(jsonFilter)
-      .pipe(bump({type}))
-      .pipe(gulp.dest(ROOT))
-      .pipe(jsonFilter.restore)
+        // Update version in `package.json` file.
+        .pipe(jsonFilter)
+        .pipe(bump({type}))
+        .pipe(gulp.dest(ROOT))
+        .pipe(jsonFilter.restore)
 
-      // Commit release.
-      .pipe(git.add({args: '-f'}))
-      .pipe(git.commit('release: release version'))
+        // Commit release.
+        .pipe(git.add({args: '-f'}))
+        .pipe(git.commit('release: release version'))
 
-      // Create tag.
-      .pipe(pkgJsonFilter)
-      .pipe(tagVersion())
-      .pipe(pkgJsonFilter.restore)
+        // Create tag.
+        .pipe(pkgJsonFilter)
+        .pipe(tagVersion())
+        .pipe(pkgJsonFilter.restore)
 
-      // Remove `dist` and commit for the next release.
-      .pipe(distFilter)
-      .pipe(git.rm({args: '-rf'}))
-      .pipe(git.commit('release: prepare next release'));
+        // Remove `dist` and commit for the next release.
+        .pipe(distFilter)
+        .pipe(git.rm({args: '-rf'}))
+        .pipe(git.commit('release: prepare next release'));
   });
 });
 
