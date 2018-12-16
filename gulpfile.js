@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+/* eslint-disable require-jsdoc */
+
 'use strict';
 
 const path = require('path');
@@ -34,7 +36,6 @@ const babel = require('gulp-babel');
 const bump = require('gulp-bump');
 const tagVersion = require('gulp-tag-version');
 const git = require('gulp-git');
-const gulpFilter = require('gulp-filter');
 const jasmine = require('gulp-jasmine');
 const KarmaServer = require('karma').Server;
 
@@ -44,11 +45,11 @@ const TEST = path.join(ROOT, 'test');
 const DIST = path.join(ROOT, 'dist');
 const PKG = path.join(ROOT, 'package.json');
 
-gulp.task('clean', () => {
+function clean() {
   return del(DIST);
-});
+}
 
-gulp.task('lint', () => {
+function lint() {
   const src = [
     path.join(SRC, '**', '*.js'),
     path.join(TEST, '**', '*.js'),
@@ -59,66 +60,85 @@ gulp.task('lint', () => {
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.failAfterError());
-});
+}
 
-gulp.task('build', ['clean', 'lint'], () => {
+function compile() {
   return gulp.src(path.join(SRC, '**', '*.js'))
       .pipe(babel())
       .pipe(gulp.dest(DIST));
-});
+}
 
-gulp.task('test:unit', ['build'], () => {
+function testUnit() {
   return gulp.src(path.join(TEST, 'units', '**', '*.js')).pipe(jasmine());
-});
+}
 
-gulp.task('test:it', ['test:unit'], (done) => {
+function testIntegration(done) {
   const configFile = path.join(TEST, 'it', 'karma.conf.js');
-  startKarma(configFile, () => done());
-});
+  startKarma(configFile, done);
+}
 
-gulp.task('test', ['test:unit', 'test:it']);
-
-['minor', 'major', 'patch'].forEach((type) => {
-  gulp.task(`release:${type}`, ['build', 'test'], () => {
-    const jsonFilter = gulpFilter('*.json', {restore: true});
-    const pkgJsonFilter = gulpFilter('package.json', {restore: true});
-    const distFilter = gulpFilter('dist', {restore: true});
-
-    return gulp.src([PKG, DIST])
-        // Update version in `package.json` file.
-        .pipe(jsonFilter)
-        .pipe(bump({type}))
-        .pipe(gulp.dest(ROOT))
-        .pipe(jsonFilter.restore)
-
-        // Commit release.
-        .pipe(git.add({args: '-f'}))
-        .pipe(git.commit('release: release version'))
-
-        // Create tag.
-        .pipe(pkgJsonFilter)
-        .pipe(tagVersion())
-        .pipe(pkgJsonFilter.restore)
-
-        // Remove `dist` and commit for the next release.
-        .pipe(distFilter)
-        .pipe(git.rm({args: '-rf'}))
-        .pipe(git.commit('release: prepare next release'));
-  });
-});
-
-/**
- * Run Karma with configuration file.
- *
- * @param {string} configFile Karma configuration file.
- * @param {function} done Gulp done function.
- */
 function startKarma(configFile, done) {
-  const karma = new KarmaServer({configFile}, () => {
+  const karma = new KarmaServer({configFile}, (err) => {
     log(colors.grey('Calling done callback of Karma'));
-    done();
+    done(err);
   });
 
   log(colors.grey(`Running karma with configuration: ${configFile}`));
   karma.start();
 }
+
+const build = gulp.series(
+    gulp.parallel(clean, lint),
+    compile
+);
+
+const test = gulp.series(
+    build,
+    testUnit,
+    testIntegration
+);
+
+function bumpRelease(type) {
+  return gulp.src(PKG)
+      .pipe(bump({type}))
+      .pipe(gulp.dest(ROOT));
+}
+
+function performRelease() {
+  return gulp.src([PKG, DIST])
+      .pipe(git.add({args: '-f'}))
+      .pipe(git.commit('release: release version'));
+}
+
+function tagRelease() {
+  return gulp.src(PKG).pipe(tagVersion());
+}
+
+function prepareNextRelease() {
+  return gulp.src(DIST)
+      .pipe(git.rm({args: '-rf'}))
+      .pipe(git.commit('release: prepare next release'));
+}
+
+module.exports.clean = clean;
+module.exports.lint = lint;
+module.exports.build = build;
+module.exports.test = test;
+
+['minor', 'major', 'patch'].forEach((type) => {
+  function prepareRelease() {
+    return bumpRelease(type);
+  }
+
+  const release = gulp.series(
+      prepareRelease,
+      performRelease,
+      tagRelease,
+      prepareNextRelease
+  );
+
+  module.exports[`release:${type}`] = gulp.series(
+      test,
+      release
+  );
+});
