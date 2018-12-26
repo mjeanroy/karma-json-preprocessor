@@ -22,19 +22,9 @@
  * SOFTWARE.
  */
 
-describe('JsonPreprocessor', () => {
-  it('should load JSON files', () => {
-    expect(__json__).toBeDefined();
-    expect(__json__.$get('data.json')).toEqual({
-      id: 1,
-      name: 'John Doe',
-    });
-  });
+const del = require('del');
+const config = require('../config');
 
-  it('should return different objects with $get', () => {
-    const o1 = __json__.$get('data.json');
-    const o2 = __json__.$get('data.json');
-    expect(o1).not.toBe(o2);
-    expect(o1).toEqual(o2);
-  });
-});
+module.exports = function clean() {
+  return del(config.dist);
+};

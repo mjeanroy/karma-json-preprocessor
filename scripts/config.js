@@ -22,19 +22,14 @@
  * SOFTWARE.
  */
 
-describe('JsonPreprocessor', () => {
-  it('should load JSON files', () => {
-    expect(__json__).toBeDefined();
-    expect(__json__.$get('data.json')).toEqual({
-      id: 1,
-      name: 'John Doe',
-    });
-  });
+const path = require('path');
+const ROOT = path.join(__dirname, '..');
 
-  it('should return different objects with $get', () => {
-    const o1 = __json__.$get('data.json');
-    const o2 = __json__.$get('data.json');
-    expect(o1).not.toBe(o2);
-    expect(o1).toEqual(o2);
-  });
-});
+module.exports = {
+  root: ROOT,
+  src: path.join(ROOT, 'src'),
+  test: path.join(ROOT, 'test'),
+  scripts: path.join(ROOT, 'scripts'),
+  dist: path.join(ROOT, 'dist'),
+  pkg: path.join(ROOT, 'package.json'),
+};
