@@ -39,7 +39,7 @@ module.exports = (config) => {
       require('karma-phantomjs-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-babel-preprocessor'),
-      require('../../dist/karma-json-preprocessor'),
+      require('../../src/karma-json-preprocessor'),
     ],
 
     frameworks: [
