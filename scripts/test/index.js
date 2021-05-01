@@ -53,18 +53,21 @@ function testIntegration(done) {
 /**
  * Run tests on karma.
  *
- * @param {string} configFile The configuration file to use.
+ * @param {string} configFilePath The configuration file to use.
  * @param {function} done The `done` callback.
  * @return {void}
  */
-function startKarma(configFile, done) {
-  const srv = new karma.Server({configFile}, (err) => {
-    log(colors.grey('Calling done callback of Karma'));
-    done(err);
-  });
+function startKarma(configFilePath, done) {
+  log(colors.grey(`Parsing karma configuration from: ${configFilePath}`));
+  karma.config.parseConfig(configFilePath, null, {promiseConfig: true, throwErrors: true}).then((config) => {
+    const srv = new karma.Server(config, (err) => {
+      log(colors.grey('Calling done callback of Karma'));
+      done(err);
+    });
 
-  log(colors.grey(`Running karma with configuration: ${configFile}`));
-  srv.start();
+    log(colors.grey(`Starting karma server`));
+    srv.start();
+  });
 }
 
 module.exports = function test(done) {
