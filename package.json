@@ -25,7 +25,7 @@
   "author": "Mickael Jeanroy <mickael.jeanroy@gmail.com>",
   "devDependencies": {
     "@babel/core": "7.15.5",
-    "@babel/preset-env": "7.15.4",
+    "@babel/preset-env": "7.15.6",
     "@babel/register": "7.15.3",
     "ansi-colors": "4.1.1",
     "eslint": "7.32.0",
