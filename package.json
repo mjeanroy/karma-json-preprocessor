@@ -26,7 +26,7 @@
   "devDependencies": {
     "@babel/core": "7.16.7",
     "@babel/preset-env": "7.16.7",
-    "@babel/register": "7.16.5",
+    "@babel/register": "7.16.7",
     "ansi-colors": "4.1.1",
     "eslint": "8.6.0",
     "eslint-config-google": "0.14.0",
