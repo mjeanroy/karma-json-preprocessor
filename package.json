@@ -24,7 +24,7 @@
   ],
   "author": "Mickael Jeanroy <mickael.jeanroy@gmail.com>",
   "devDependencies": {
-    "@babel/core": "7.17.0",
+    "@babel/core": "7.17.2",
     "@babel/preset-env": "7.16.11",
     "@babel/register": "7.17.0",
     "ansi-colors": "4.1.1",
