@@ -43,7 +43,7 @@
     "karma-jasmine-html-reporter": "1.7.0",
     "karma-phantomjs-launcher": "1.0.4",
     "phantomjs-prebuilt": "2.1.16",
-    "rimraf": "5.0.5"
+    "rimraf": "5.0.7"
   },
   "peerDependencies": {
     "karma": ">=0.9"
