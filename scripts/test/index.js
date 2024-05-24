@@ -59,23 +59,22 @@ function testIntegration(done) {
  */
 function startKarma(configFilePath, done) {
   log(colors.grey(`Parsing karma configuration from: ${configFilePath}`));
-  karma.config.parseConfig(configFilePath, null, {promiseConfig: true, throwErrors: true}).then((config) => {
-    const srv = new karma.Server(config, (err) => {
+  karma.config.parseConfig(configFilePath, null, { promiseConfig: true, throwErrors: true }).then((karmaConfig) => {
+    const srv = new karma.Server(karmaConfig, (err) => {
       log(colors.grey('Calling done callback of Karma'));
       done(err);
     });
 
-    log(colors.grey(`Starting karma server`));
+    log(colors.grey('Starting karma server'));
     srv.start();
   });
 }
 
 module.exports = function test(done) {
   const taskFn = gulp.series(
-      testUnit,
-      testIntegration
+    testUnit,
+    testIntegration,
   );
 
   taskFn(done);
 };
-

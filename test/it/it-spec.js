@@ -24,7 +24,10 @@
 
 describe('JsonPreprocessor', () => {
   it('should load JSON files', () => {
+    // eslint-disable-next-line no-undef
     expect(__json__).toBeDefined();
+
+    // eslint-disable-next-line no-undef
     expect(__json__.$get('data.json')).toEqual({
       id: 1,
       name: 'John Doe',
@@ -32,7 +35,10 @@ describe('JsonPreprocessor', () => {
   });
 
   it('should return different objects with $get', () => {
+    // eslint-disable-next-line no-undef
     const o1 = __json__.$get('data.json');
+
+    // eslint-disable-next-line no-undef
     const o2 = __json__.$get('data.json');
     expect(o1).not.toBe(o2);
     expect(o1).toEqual(o2);

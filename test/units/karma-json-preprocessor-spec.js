@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-'use strict';
-
 const jsonPreprocessor = require('../../src/karma-json-preprocessor');
 
 describe('json-preprocessor', () => {
@@ -34,7 +32,7 @@ describe('json-preprocessor', () => {
     mod = jsonPreprocessor['preprocessor:json'];
 
     newFile = (path) => ({
-      path: path,
+      path,
       originalPath: path,
       contentPath: path,
       isUrl: false,
@@ -75,19 +73,20 @@ describe('json-preprocessor', () => {
       process = mod[1](logger, basePath);
     });
 
-    it('should process file and strip prefix', function(done) {
+    it('should process file and strip prefix', (done) => {
       process = mod[1](logger, basePath, {
         stripPrefix: 'path',
       });
 
       file = newFile('/base/path/file.json');
-      obj = {id: 1};
+      obj = { id: 1 };
 
       process(JSON.stringify(obj), file, (processedContent) => {
         const window = {};
 
         expect(window.__json__).not.toBeDefined();
 
+        // eslint-disable-next-line no-eval
         eval(processedContent);
 
         expect(window.__json__).toEqual({
@@ -99,11 +98,11 @@ describe('json-preprocessor', () => {
       });
     });
 
-    it('should process file', function(done) {
+    it('should process file', (done) => {
       file = newFile('/base/path/file.json');
-      obj = {id: 1};
+      obj = { id: 1 };
 
-      process(JSON.stringify(obj), file, (processedContent) => {
+      process(JSON.stringify(obj), file, () => {
         expect(file.path).toBe('/base/path/file.json.js');
         done();
       });
@@ -111,18 +110,18 @@ describe('json-preprocessor', () => {
 
     it('should log processing', (done) => {
       file = newFile('/base/path/file.json');
-      obj = {id: 1};
+      obj = { id: 1 };
 
-      process(JSON.stringify(obj), file, (processedContent) => {
+      process(JSON.stringify(obj), file, () => {
         expect(logger.create).toHaveBeenCalled();
         expect(log.debug).toHaveBeenCalledWith('Processing "%s".', '/base/path/file.json');
         done();
       });
     });
 
-    it('should log error if json is not valid', function(done) {
+    it('should log error if json is not valid', (done) => {
       file = newFile('/base/path/file.json');
-      obj = {id: 1};
+      obj = { id: 1 };
 
       process('foo', file, (processedContent) => {
         expect(processedContent).toBe('');
@@ -136,15 +135,16 @@ describe('json-preprocessor', () => {
       process = mod[1](logger, basePath);
 
       file = newFile('/base/path/file.json');
-      obj = {id: 1};
+      obj = { id: 1 };
 
       process(JSON.stringify(obj), file, (processedContent) => {
         // Create local window variable and trigger eval
         const window = {};
 
+        // eslint-disable-next-line no-eval
         eval(processedContent);
 
-        window.__json__['foo'] = obj;
+        window.__json__.foo = obj;
 
         const clone = window.__json__.$get('foo');
         expect(clone).not.toBe(obj);
@@ -158,15 +158,16 @@ describe('json-preprocessor', () => {
       process = mod[1](logger, basePath);
 
       file = newFile('/base/path/file.json');
-      obj = {id: 1};
+      obj = { id: 1 };
 
       process('{"id": 1}', file, (processedContent) => {
         // Create local window variable and trigger eval
         const window = {};
 
+        // eslint-disable-next-line no-eval
         eval(processedContent);
 
-        window.__json__['foo'] = null;
+        window.__json__.foo = null;
 
         const clone = window.__json__.$get('foo');
         expect(clone).toBe(null);

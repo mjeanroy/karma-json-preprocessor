@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-'use strict';
-
 const util = require('util');
 
 /**
@@ -35,17 +33,18 @@ const util = require('util');
 function createTemplate(varName) {
   // 1- Append to dictionary object
   // 2- Append getter function that will clone object
-  return '' +
+  return (
     `window.${varName} = window.${varName} || {};` +
-    `window.${varName}[\'%s\'] = %s;` +
+    `window.${varName}['%s'] = %s;` +
     `window.${varName}.$get = window.${varName}.$get || function(path) {` +
-    `  try {` +
+    '  try {' +
     `    return JSON.parse(JSON.stringify(window.${varName}[path]));` +
-    `  } catch (e) {` +
-    `    console.warn("Unable to process json file: ", path);` +
-    `    return null;` +
-    `  }` +
-    `}`;
+    '  } catch (e) {' +
+    '    console.warn("Unable to process json file: ", path);' +
+    '    return null;' +
+    '  }' +
+    '}'
+  );
 }
 
 /**
@@ -61,17 +60,18 @@ function createJsonPreprocessor(logger, basePath, config) {
   const conf = config || {};
   const stripPrefix = new RegExp(`^${(conf.stripPrefix || '')}`);
 
-  return function(content, file, done) {
+  return (content, file, done) => {
     log.debug('Processing "%s".', file.originalPath);
 
     // Build json path file.
     const jsonPath = file.originalPath
-        .replace(`${basePath}/`, '')
-        .replace(stripPrefix, '');
+      .replace(`${basePath}/`, '')
+      .replace(stripPrefix, '');
 
     const template = createTemplate(conf.varName || '__json__');
 
     // Update file path
+    // eslint-disable-next-line no-param-reassign
     file.path = `${file.path}.js`;
 
     try {
