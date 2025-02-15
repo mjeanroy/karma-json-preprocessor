@@ -30,6 +30,8 @@
 
 const path = require('path');
 
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 module.exports = (config) => {
   config.set({
     // base path, that will be used to resolve files and exclude
@@ -38,7 +40,6 @@ module.exports = (config) => {
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
-      require('karma-phantomjs-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-babel-preprocessor'),
       require('../../src/karma-json-preprocessor'),
@@ -70,6 +71,9 @@ module.exports = (config) => {
     // CLI --port 9876
     port: 9876,
 
+    hostname: '127.0.0.1',
+    listenAddress: '127.0.0.1',
+
     // cli runner port
     // CLI --runner-port 9100
     runnerPort: 9100,
@@ -87,6 +91,18 @@ module.exports = (config) => {
     // CLI --auto-watch --no-auto-watch
     autoWatch: false,
 
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-web-security',
+          '--disable-gpu',
+          '--remote-debugging-address=0.0.0.0',
+        ],
+      },
+    },
+
     // Start these browsers, currently available:
     // - Chrome
     // - ChromeCanary
@@ -97,7 +113,7 @@ module.exports = (config) => {
     // - IE (only Windows)
     // CLI --browsers Chrome,Firefox,Safari
     browsers: [
-      'PhantomJS',
+      'ChromeHeadlessCI',
     ],
 
     // If browser does not capture in given timeout [ms], kill it
