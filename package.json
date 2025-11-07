@@ -42,7 +42,7 @@
     "karma-chrome-launcher": "3.2.0",
     "karma-jasmine": "4.0.2",
     "karma-jasmine-html-reporter": "1.7.0",
-    "puppeteer": "24.28.0",
+    "puppeteer": "24.29.1",
     "rimraf": "6.1.0"
   },
   "peerDependencies": {
