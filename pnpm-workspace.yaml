@@ -23,5 +23,6 @@
 ##
 
 minimumReleaseAge: 2880
+blockExoticSubdeps: true
 onlyBuiltDependencies:
   - puppeteer
