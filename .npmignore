@@ -39,3 +39,6 @@
 /.npmrc
 /.nvmrc
 /.travis.yml
+
+/pnpm-workspace.yaml
+/pnpm-lock.yaml
