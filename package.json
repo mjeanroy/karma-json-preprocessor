@@ -40,7 +40,7 @@
     "karma": "6.4.4",
     "karma-babel-preprocessor": "8.0.2",
     "karma-chrome-launcher": "3.2.0",
-    "karma-jasmine": "4.0.2",
+    "karma-jasmine": "5.1.0",
     "karma-jasmine-html-reporter": "1.7.0",
     "puppeteer": "24.40.0",
     "rimraf": "6.1.3"
