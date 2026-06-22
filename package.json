@@ -33,7 +33,7 @@
     "eslint-plugin-import": "2.32.0",
     "fancy-log": "2.0.0",
     "gulp": "5.0.1",
-    "gulp-babel": "8.0.0",
+    "gulp-babel": "8.1.0",
     "gulp-jasmine": "4.0.0",
     "jasmine": "3.10.0",
     "jasmine-core": "3.10.1",
