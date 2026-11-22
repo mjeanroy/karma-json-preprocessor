@@ -51,12 +51,14 @@ jobs:
         name: Set up NodeJS
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: false
       - uses: pnpm/setup@731dfb6463bbd11c11fd0ee11fe00ed0e36d48a1 # v3.2.0
         name: Set up PNPM
         with:
           version: 11.28.12
           node-version-file: false
           install: false
+          cache: false
       # Workaround for puppeteer 24 on Node >= 26.1 (and >= 24.16): it unzips
       # Chrome with extract-zip, which silently stops mid-extraction on these
       # Node versions. The install still exits 0, but leaves a partial Chrome
