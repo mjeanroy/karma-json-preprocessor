@@ -30,7 +30,11 @@
 
 const path = require('path');
 
-process.env.CHROME_BIN = require('puppeteer').executablePath();
+// Use the Chrome binary given by CHROME_BIN when it is set, otherwise the one
+// downloaded by puppeteer. On CI, CHROME_BIN points to the Chrome preinstalled
+// on the runner, because puppeteer 24 cannot install Chrome on recent Node
+// versions (see .github/workflows/build.yml).
+process.env.CHROME_BIN = process.env.CHROME_BIN || require('puppeteer').executablePath();
 
 module.exports = (config) => {
   config.set({
