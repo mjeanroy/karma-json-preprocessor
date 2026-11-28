@@ -35,4 +35,4 @@ Running one suite without the full gulp chain:
 
 - Every source, script, config and workflow file starts with the MIT license header. Keep it on new files.
 - `pnpm-workspace.yaml` sets `lockfile: false`, exact versions (`saveExact`), and a 2-day `minimumReleaseAge` for new dependency versions.
-- CI (`.github/workflows/build.yml`) runs on Windows, Linux and macOS with Node 18–26. It installs with `PUPPETEER_SKIP_DOWNLOAD=true` and points `CHROME_BIN` at the runner's Chrome, to work around puppeteer 24 failing to extract Chrome on recent Node versions. Keep that workaround until Node < 22.12 is dropped and puppeteer is upgraded to 25.
+- CI (`.github/workflows/build.yml`) runs on Windows, Linux and macOS with Node 22–26 (puppeteer 25 requires Node >= 22.12). The tests use the Chrome downloaded by puppeteer at install time.
